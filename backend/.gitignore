@@ -1,0 +1,41 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environment
+env/
+venv/
+.venv/
+
+# Environment variables
+.env
+.env.*
+
+# VS Code settings
+.vscode/
+
+# OS / system files
+.DS_Store
+Thumbs.db
+
+# Python egg metadata
+*.egg-info/
+.eggs/
+
+# Testing / coverage
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache/
+pytest_cache/
+
+# MyPy
+.mypy_cache/
+
+# SQLModel SQLite DB (if used for local testing)
+*.db
+*.sqlite3
