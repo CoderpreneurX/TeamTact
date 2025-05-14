@@ -1,15 +1,10 @@
-﻿# app/main.py
-
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.routes.router import router as api_router
+from app.api.router import router as api_router
 
-app = FastAPI(
-    title="TeamTact API",
-    version="1.0.0"
-)
+app = FastAPI(title="TeamTact API", version="1.0.0")
 
 # CORS settings (adjust in production)
 app.add_middleware(
