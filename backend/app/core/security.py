@@ -12,6 +12,10 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
 def create_access_refresh_tokens(user_id: str) -> Tuple[str, str]:
     now = datetime.now(timezone.utc)
 

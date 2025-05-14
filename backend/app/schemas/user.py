@@ -11,6 +11,11 @@ class UserCreate(SQLModel):
     password: str
 
 
+class UserLogin(SQLModel):
+    email: str
+    password: str
+
+
 class UserRead(SQLModel):
     id: UUID
     fullname: str

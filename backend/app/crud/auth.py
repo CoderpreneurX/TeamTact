@@ -1,11 +1,19 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, or_
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.core.security import hash_password
+from typing import Optional
 
 
-def get_user_by_email_or_username(session: Session, email: str, username: str):
-    statement = select(User).where((User.email == email) | (User.username == username))
+def get_user_by_email_or_username(
+    session: Session, email: str, username: Optional[str] = None
+):
+    if username:
+        statement = select(User).where(
+            or_(User.email == email, User.username == username)
+        )
+    else:
+        statement = select(User).where(User.email == email)
     return session.exec(statement).first()
 
 
