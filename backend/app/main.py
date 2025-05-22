@@ -1,7 +1,10 @@
-﻿from fastapi import FastAPI
+﻿"""
+This is the main module that has the App instance and its configuration
+"""
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
 from app.api.router import router as api_router
 
 app = FastAPI(title="TeamTact API", version="1.0.0")

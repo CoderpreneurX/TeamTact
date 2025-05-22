@@ -1,6 +1,4 @@
 ﻿from pydantic_settings import BaseSettings
-from pathlib import Path
-import os
 
 class Settings(BaseSettings):
     DATABASE_URL: str
@@ -8,6 +6,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRATION_TIME: int
     JWT_SECRET_KEY: str
     JWT_REFRESH_SECRET_KEY: str
+    JWT_ALGORITHM: str
 
     class Config:
         env_file = ".env"
