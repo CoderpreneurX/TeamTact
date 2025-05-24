@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { DashboardHome } from '@/features/dashboard/pages/DashboardHome';
+import { LoginPage } from '@/pages/auth/LoginPage';
+import { DashboardHome } from '@/pages/dashboard/DashboardHome';
 
 export const AppRouter = () => {
   return (
