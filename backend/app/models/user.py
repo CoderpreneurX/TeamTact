@@ -29,7 +29,10 @@ class User(UserBase, table=True):
         default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )
 
-    def to_json(self):
+    def is_verified(self) -> bool:
+        return self.email_verified
+
+    def to_json(self) -> dict:
         return {
             "id": str(self.id),
             "fullname": self.fullname,

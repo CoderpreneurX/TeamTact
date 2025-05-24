@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from uuid import UUID
 
 from fastapi.responses import JSONResponse
 from jose import ExpiredSignatureError, JWTError, jwt
@@ -14,9 +15,9 @@ ACCESS_TOKEN_EXP_MINUTES = settings.ACCESS_TOKEN_EXPIRATION_TIME
 REFRESH_TOKEN_EXP_MINUTES = settings.REFRESH_TOKEN_EXPIRATION_TIME
 
 
-def generate_access_token(user_id: str) -> str:
+def generate_access_token(user_id: UUID) -> str:
     payload = {
-        "sub": user_id,
+        "sub": str(user_id),
         "type": "access",
         "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXP_MINUTES),
         "iat": datetime.now(timezone.utc),
@@ -24,9 +25,9 @@ def generate_access_token(user_id: str) -> str:
     return jwt.encode(payload, ACCESS_TOKEN_SECRET, algorithm="HS256")
 
 
-def generate_refresh_token(user_id: str) -> str:
+def generate_refresh_token(user_id: UUID) -> str:
     payload = {
-        "sub": user_id,
+        "sub": str(user_id),
         "type": "refresh",
         "exp": datetime.now(timezone.utc)
         + timedelta(minutes=REFRESH_TOKEN_EXP_MINUTES),
@@ -35,9 +36,11 @@ def generate_refresh_token(user_id: str) -> str:
     return jwt.encode(payload, REFRESH_TOKEN_SECRET, algorithm="HS256")
 
 
-def verify_access_token(token: str):
+def verify_access_token(token: str) -> UUID | JSONResponse:
     try:
-        payload = jwt.decode(token, ACCESS_TOKEN_SECRET, algorithms=settings.JWT_ALGORITHM)
+        payload = jwt.decode(
+            token, ACCESS_TOKEN_SECRET, algorithms=settings.JWT_ALGORITHM
+        )
         if payload.get("type") != "access":
             return JSONResponse(
                 content={
@@ -46,7 +49,7 @@ def verify_access_token(token: str):
                 },
                 status_code=401,
             )
-        return True
+        return UUID(payload.get("sub"))
     except ExpiredSignatureError:
         return JSONResponse(
             content={"success": False, "message": "Access token has expired"},
@@ -61,7 +64,9 @@ def verify_access_token(token: str):
 
 def verify_refresh_token(token: str):
     try:
-        payload = jwt.decode(token, REFRESH_TOKEN_SECRET, algorithms=settings.JWT_ALGORITHM)
+        payload = jwt.decode(
+            token, REFRESH_TOKEN_SECRET, algorithms=settings.JWT_ALGORITHM
+        )
         if payload.get("type") != "refresh":
             return JSONResponse(
                 content={

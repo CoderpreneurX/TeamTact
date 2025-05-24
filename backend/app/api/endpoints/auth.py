@@ -2,14 +2,16 @@ from fastapi import Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
+from app.api.dependencies import get_user
 from app.core.security import set_auth_cookies, verify_password
 from app.core.token import (
     generate_access_token,
     generate_refresh_token,
     verify_refresh_token,
 )
-from app.crud.auth import create_user, get_user_by_email_or_username
+from app.crud.auth import create_user, get_user_by_email_or_username, get_user_by_id
 from app.db.session import get_session
+from app.models.user import User
 from app.schemas.user import UserCreate
 
 
@@ -25,8 +27,8 @@ def signup_user(
         )
 
     user = create_user(session, user_in)
-    access_token = generate_access_token(str(user.id))
-    refresh_token = generate_refresh_token(str(user.id))
+    access_token = generate_access_token(user.id)
+    refresh_token = generate_refresh_token(user.id)
 
     set_auth_cookies(response, access_token, refresh_token)
     return JSONResponse({"success": True, "data": user.to_json()}, status_code=201)
@@ -38,10 +40,19 @@ def login_user(
     user = get_user_by_email_or_username(session, user_in.email)
 
     if not user or not verify_password(user_in.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        return JSONResponse(
+            content={"success": False, "message": "Invalid Credentials"},
+            status_code=401,
+        )
+    
+    if not user.is_verified():
+        return JSONResponse(content={
+            "success": False,
+            "message": "Email Verification is pending, please verify and try again!"
+        }, status_code=403)
 
-    access_token = generate_access_token(str(user.id))
-    refresh_token = generate_refresh_token(str(user.id))
+    access_token = generate_access_token(user.id)
+    refresh_token = generate_refresh_token(user.id)
 
     # Create a JSON response
     response = JSONResponse(
@@ -91,3 +102,19 @@ def refresh_access_token(request: Request):
     set_auth_cookies(response, new_access_token, refresh_token)
 
     return response
+
+
+def get_profile(session: Session = Depends(get_session), user_id=Depends(get_user)):
+    if isinstance(user_id, JSONResponse):
+        return user_id
+
+    user: User = get_user_by_id(session=session, user_id=user_id)
+
+    return JSONResponse(
+        content={
+            "success": True,
+            "message": "User Profile Retrieved successfully!",
+            "data": user.to_json(),
+        },
+        status_code=200,
+    )
