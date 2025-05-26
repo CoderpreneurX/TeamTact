@@ -73,16 +73,16 @@ def verify_refresh_token(token: str):
                     "success": False,
                     "message": "Invalid token type: expected refresh token",
                 },
-                status_code=401,
+                status_code=400,
             )
         return payload
     except ExpiredSignatureError:
         return JSONResponse(
             content={"success": False, "message": "Refresh token has expired"},
-            status_code=401,
+            status_code=400,
         )
     except JWTError:
         return JSONResponse(
             content={"success": False, "message": "Invalid refresh token"},
-            status_code=401,
+            status_code=400,
         )

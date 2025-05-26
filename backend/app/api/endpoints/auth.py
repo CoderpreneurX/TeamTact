@@ -69,7 +69,7 @@ def refresh_access_token(request: Request):
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:
         return JSONResponse(
-            status_code=401,
+            status_code=400,
             content={"success": False, "message": "Refresh token not found in cookies"},
         )
 
