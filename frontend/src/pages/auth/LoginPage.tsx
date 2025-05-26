@@ -19,7 +19,7 @@ export const LoginPage: React.FC = () => {
         toast.error(response.data?.message)
       }
     } catch {
-      toast.error("Some Internal Server Error occured, Please try later");
+      toast.error("Some Internal Server Error occured, Please try later!");
     }
   };
 
