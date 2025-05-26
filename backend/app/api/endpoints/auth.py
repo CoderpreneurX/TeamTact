@@ -16,22 +16,25 @@ from app.schemas.user import UserCreate
 
 
 def signup_user(
-    user_in: UserCreate, response: Response, session: Session = Depends(get_session)
+    user_in: UserCreate, session: Session = Depends(get_session)
 ) -> JSONResponse:
     existing_user = get_user_by_email_or_username(
         session, user_in.email, user_in.username
     )
     if existing_user:
-        raise HTTPException(
-            status_code=400, detail="Email or username already registered"
+        return JSONResponse(
+            content={"success": False, "message": "Email or Username already taken!"}
         )
 
-    user = create_user(session, user_in)
-    access_token = generate_access_token(user.id)
-    refresh_token = generate_refresh_token(user.id)
+    create_user(session, user_in)
 
-    set_auth_cookies(response, access_token, refresh_token)
-    return JSONResponse({"success": True, "data": user.to_json()}, status_code=201)
+    return JSONResponse(
+        {
+            "success": True,
+            "message": "Signup successful, please check your email for verification!",
+        },
+        status_code=201,
+    )
 
 
 def login_user(
@@ -44,12 +47,15 @@ def login_user(
             content={"success": False, "message": "Invalid Credentials"},
             status_code=401,
         )
-    
+
     if not user.is_verified():
-        return JSONResponse(content={
-            "success": False,
-            "message": "Email Verification is pending, please verify and try again!"
-        }, status_code=403)
+        return JSONResponse(
+            content={
+                "success": False,
+                "message": "Email Verification is pending, please verify and try again!",
+            },
+            status_code=403,
+        )
 
     access_token = generate_access_token(user.id)
     refresh_token = generate_refresh_token(user.id)

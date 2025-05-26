@@ -10,7 +10,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication & Authorization"])
 
 @router.post("/signup", response_model=UserRead)
 def signup_route(
-    user_in: UserCreate, response: Response, session: Session = Depends(get_session)
+    user_in: UserCreate, session: Session = Depends(get_session)
 ):
     return signup_user(user_in, response, session)
 
