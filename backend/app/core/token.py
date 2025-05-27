@@ -12,7 +12,7 @@ REFRESH_TOKEN_SECRET = settings.JWT_REFRESH_SECRET_KEY
 
 # Expiration times
 ACCESS_TOKEN_EXP_MINUTES = settings.ACCESS_TOKEN_EXPIRATION_TIME
-REFRESH_TOKEN_EXP_MINUTES = settings.REFRESH_TOKEN_EXPIRATION_TIME
+REFRESH_TOKEN_EXP_DAYS = settings.REFRESH_TOKEN_EXPIRATION_TIME
 
 
 def generate_access_token(user_id: UUID) -> str:
@@ -30,7 +30,7 @@ def generate_refresh_token(user_id: UUID) -> str:
         "sub": str(user_id),
         "type": "refresh",
         "exp": datetime.now(timezone.utc)
-        + timedelta(minutes=REFRESH_TOKEN_EXP_MINUTES),
+        + timedelta(days=REFRESH_TOKEN_EXP_DAYS),
         "iat": datetime.now(timezone.utc),
     }
     return jwt.encode(payload, REFRESH_TOKEN_SECRET, algorithm="HS256")
