@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; background: #f9f9f9; padding: 30px; }
+        .container { background: white; padding: 20px; border-radius: 8px; }
+        .button { background-color: #4CAF50; color: white; padding: 10px 20px;
+                  text-decoration: none; border-radius: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>You've been invited to join {{ team_name }}</h2>
+        <p>Click the button below to accept your invitation:</p>
+        <a href="{{ invite_link }}" class="button">Join Team</a>
+        <p>If you weren’t expecting this, you can safely ignore this email.</p>
+    </div>
+</body>
+</html>
