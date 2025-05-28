@@ -39,7 +39,7 @@ def upgrade() -> None:
     sa.Column('invite_token', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('joined', sa.Boolean(), nullable=False),
     sa.Column('invited_at', sa.DateTime(), nullable=False),
-    sa.Column('joined_at', sa.DateTime(), nullable=True),
+    sa.Column('joined_at', sa.DateTime(), nullable=False),
     sa.Column('cancelled', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['team_id'], ['teams.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
