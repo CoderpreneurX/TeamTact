@@ -12,7 +12,7 @@ app = FastAPI(title="TeamTact API", version="1.0.0")
 # CORS settings (adjust in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to specific domain in prod
+    allow_origins=["http://localhost:5173"],  # Change to specific domain in prod
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
