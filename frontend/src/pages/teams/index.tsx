@@ -5,7 +5,7 @@ export function TeamsPage() {
   return (
     <div className="space-y-4 bg-gray-50">
       <div>
-        <h1 className="font-bold text-2xl">My Teams</h1>
+        {/* <h1 className="font-bold text-2xl">My Teams</h1> */}
       </div>
       <div className="h-[620px] mx-4 my-8">
         <Card className="h-full grid place-content-center">
