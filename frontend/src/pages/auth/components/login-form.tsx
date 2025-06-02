@@ -9,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { loginSchema } from "@/schemas/authentication";
 import type { LoginFormSchema } from "@/schemas/authentication";
+import { Eye, EyeClosed } from "lucide-react";
+import LogoColoredBackground from "@/assets/ProjectLogo/png/TeamTact Logo - Colored Background.png"
 
 interface LoginFormProps {
   className?: string;
@@ -17,6 +19,7 @@ interface LoginFormProps {
 
 export function LoginForm({ className, onSubmit }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const {
     register,
@@ -66,7 +69,7 @@ export function LoginForm({ className, onSubmit }: LoginFormProps) {
                 )}
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-3 relative">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <Link
@@ -78,9 +81,16 @@ export function LoginForm({ className, onSubmit }: LoginFormProps) {
                 </div>
                 <Input
                   id="password"
-                  type="password"
+                  type={isPasswordVisible ? "text" : "password"}
+                  placeholder="••••••••••••"
                   {...register("password")}
                 />
+                <div
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  className="absolute top-9.5 right-2 text-slate-500"
+                >
+                  {isPasswordVisible ? <EyeClosed /> : <Eye />}
+                </div>
                 {errors.password && (
                   <p className="text-xs text-destructive">
                     {errors.password.message}
@@ -126,11 +136,15 @@ export function LoginForm({ className, onSubmit }: LoginFormProps) {
             </div>
           </form>
 
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-logo-background relative hidden md:block">
             <img
-              src="/placeholder.svg"
-              alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              src={LogoColoredBackground}
+              alt="TeamTact Logo"
+              className="absolute top-[calc(50%-30px)] left-[calc(50%-115px)]"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://placehold.co/600x400/E5E7EB/1F2937?text=TeamTact";
+              }}
             />
           </div>
         </CardContent>
