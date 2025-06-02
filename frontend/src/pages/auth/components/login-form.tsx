@@ -10,6 +10,7 @@ import { useState } from "react";
 import { loginSchema } from "@/schemas/authentication";
 import type { LoginFormSchema } from "@/schemas/authentication";
 import { Eye, EyeClosed } from "lucide-react";
+import LogoColoredBackground from "@/assets/ProjectLogo/png/TeamTact Logo - Colored Background.png"
 
 interface LoginFormProps {
   className?: string;
@@ -135,11 +136,15 @@ export function LoginForm({ className, onSubmit }: LoginFormProps) {
             </div>
           </form>
 
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-logo-background relative hidden md:block">
             <img
-              src="/placeholder.svg"
-              alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              src={LogoColoredBackground}
+              alt="TeamTact Logo"
+              className="absolute top-[calc(50%-30px)] left-[calc(50%-115px)]"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://placehold.co/600x400/E5E7EB/1F2937?text=TeamTact";
+              }}
             />
           </div>
         </CardContent>
