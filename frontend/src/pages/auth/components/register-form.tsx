@@ -12,6 +12,8 @@ import {
   type RegisterFormValues,
 } from "@/schemas/authentication";
 import { useState } from "react";
+import LogoColoredBackground from "@/assets/ProjectLogo/png/TeamTact Logo - Colored Background.png";
+import { Eye, EyeClosed } from "lucide-react";
 
 interface RegisterFormProps {
   className?: string;
@@ -19,6 +21,7 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ className, onSubmit }: RegisterFormProps) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // Initialize react-hook-form with zodResolver
   const {
@@ -107,15 +110,17 @@ export function RegisterForm({ className, onSubmit }: RegisterFormProps) {
                   <p className="text-xs text-red-500">{errors.email.message}</p>
                 )}
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-3 relative">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
                 <Input
                   id="password"
-                  type="password"
+                  placeholder="••••••••••••"
+                  type={isPasswordVisible ? "text" : "password"}
                   {...register("password")}
                 />
+                <div className="absolute top-8 right-2 text-slate-500" onClick={() => setIsPasswordVisible(!isPasswordVisible)}>{isPasswordVisible ? <EyeClosed /> : <Eye />}</div>
                 {/* Display validation error message for password */}
                 {errors.password && (
                   <p className="text-xs text-red-500">
@@ -157,11 +162,11 @@ export function RegisterForm({ className, onSubmit }: RegisterFormProps) {
               </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-logo-background relative hidden md:block">
             <img
-              src="https://placehold.co/600x400/E5E7EB/1F2937?text=TeamTact"
-              alt="TeamTact Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              src={LogoColoredBackground}
+              alt="TeamTact Logo"
+              className="absolute top-[calc(50%-30px)] left-[calc(50%-115px)]"
               onError={(e) => {
                 e.currentTarget.src =
                   "https://placehold.co/600x400/E5E7EB/1F2937?text=TeamTact";

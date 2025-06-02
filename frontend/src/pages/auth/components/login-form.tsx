@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { loginSchema } from "@/schemas/authentication";
 import type { LoginFormSchema } from "@/schemas/authentication";
+import { Eye, EyeClosed } from "lucide-react";
 
 interface LoginFormProps {
   className?: string;
@@ -17,6 +18,7 @@ interface LoginFormProps {
 
 export function LoginForm({ className, onSubmit }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const {
     register,
@@ -66,7 +68,7 @@ export function LoginForm({ className, onSubmit }: LoginFormProps) {
                 )}
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-3 relative">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <Link
@@ -78,9 +80,16 @@ export function LoginForm({ className, onSubmit }: LoginFormProps) {
                 </div>
                 <Input
                   id="password"
-                  type="password"
+                  type={isPasswordVisible ? "text" : "password"}
+                  placeholder="••••••••••••"
                   {...register("password")}
                 />
+                <div
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  className="absolute top-9.5 right-2 text-slate-500"
+                >
+                  {isPasswordVisible ? <EyeClosed /> : <Eye />}
+                </div>
                 {errors.password && (
                   <p className="text-xs text-destructive">
                     {errors.password.message}
