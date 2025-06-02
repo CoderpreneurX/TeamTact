@@ -49,6 +49,8 @@ class TeamMate(SQLModel, table=True):
 
     team: Optional["Team"] = Relationship(back_populates="members")
 
+    user: Optional["User"] = Relationship(back_populates="teammate")
+
     def to_json(self):
         return {
             "id": str(self.id),
@@ -64,6 +66,7 @@ class Team(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True, index=True)
     name: str
+    code: str
     owner_id: UUID = Field(foreign_key="users.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -74,6 +77,7 @@ class Team(SQLModel, table=True):
         return {
             "id": str(self.id),
             "name": self.name,
+            "code": self.code,
             "owner_id": str(self.owner_id),
             "created_at": self.created_at.isoformat(),
             "members": [member.to_json() for member in self.members],

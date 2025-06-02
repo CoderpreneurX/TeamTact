@@ -9,9 +9,9 @@ from sqlmodel import Session, select
 # 🏢 TEAM CRUD OPERATIONS
 # ----------------------------
 
-def create_team(session: Session, name: str, owner_id: UUID) -> Team:
+def create_team(session: Session, name: str, code: str, owner_id: UUID) -> Team:
     """Create a new team and add the owner as a member."""
-    team = Team(name=name, owner_id=owner_id)
+    team = Team(name=name, code=code, owner_id=owner_id)
     session.add(team)
     session.commit()
     session.refresh(team)
@@ -22,6 +22,16 @@ def create_team(session: Session, name: str, owner_id: UUID) -> Team:
     session.commit()
 
     return team
+
+
+def is_code_unique(session: Session, code: str) -> bool:
+    """Check if the provided code is unique, i.e., it is not associated with any existing team"""
+    team = session.exec(select(Team).where(Team.code == code)).first()
+
+    if team:
+        return False
+    
+    return True
 
 
 def get_team_by_id(session: Session, team_id: UUID) -> Optional[Team]:
@@ -70,7 +80,7 @@ def invite_teammate(
 def accept_invitation(session: Session, token: str, user_id: UUID) -> Optional[TeamMate]:
     """Accept an invitation and add the user as a teammate."""
     invitation = validate_invitation(session, token)
-    if not invitation:
+    if not invitation or not invitation.user_id == user_id:
         return None
 
     teammate = TeamMate(team_id=invitation.team_id, user_id=user_id)

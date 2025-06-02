@@ -3,6 +3,7 @@ from pydantic import ConfigDict
 from uuid import UUID
 from datetime import datetime
 from typing import Optional, List
+from app.schemas.user import UserRead
 
 
 # Shallow team representation to avoid recursion
@@ -37,6 +38,7 @@ class TeamMateRead(BaseModel):
     user_id: Optional[UUID]
     joined_at: datetime
     team: Optional[TeamSimpleRead]
+    user: Optional[UserRead]
 
 
 class TeamRead(BaseModel):
