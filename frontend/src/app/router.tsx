@@ -5,6 +5,8 @@ import { DashboardHome } from "@/pages/dashboard/DashboardHome";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { MainLayout } from "@/app/layout";
 import { TeamsPage } from "@/pages/teams";
+import { TeamViewPage } from "@/pages/teams/TeamViewPage";
+import { AcceptInvitePage } from "@/pages/teams/AcceptInvitePage";
 
 const SidebarLayout = () => (
   <MainLayout>
@@ -34,6 +36,22 @@ export const AppRouter = () => {
           element={
             <ProtectedRoute>
               <TeamsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teams/:id"
+          element={
+            <ProtectedRoute>
+              <TeamViewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/accept-invite"
+          element={
+            <ProtectedRoute>
+              <AcceptInvitePage />
             </ProtectedRoute>
           }
         />
