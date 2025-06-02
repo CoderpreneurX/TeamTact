@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
-from sqlmodel import Field, SQLModel, UniqueConstraint
+from sqlmodel import Field, SQLModel, UniqueConstraint, Relationship
 from uuid import UUID
 
 
@@ -28,6 +28,8 @@ class User(UserBase, table=True):
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )
+
+    teammate: Optional["TeamMate"] = Relationship(back_populates="user")
 
     def is_verified(self) -> bool:
         return self.email_verified

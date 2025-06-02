@@ -8,7 +8,7 @@ from app.core.config import settings
 
 # Configuration
 SMTP_HOST = settings.SMTP_HOST
-SMTP_PORT = settings.SMTP_PORT  # Mailpit default
+SMTP_PORT = settings.SMTP_PORT
 SENDER_EMAIL = settings.SMTP_USER
 
 # Template setup
@@ -22,10 +22,7 @@ def render_template(template_name: str, **context) -> str:
     return template.render(**context)
 
 
-def send_invite_email(to_email: str, invite_link: str, team_name: str):
-    subject = f"You’re invited to join {team_name}"
-    html_body = render_template("invite.html", invite_link=invite_link, team_name=team_name)
-
+def send_email(subject: str, to_email: str, html_body: str):
     message = MIMEMultipart("alternative")
     message["From"] = SENDER_EMAIL
     message["To"] = to_email
@@ -35,5 +32,16 @@ def send_invite_email(to_email: str, invite_link: str, team_name: str):
     try:
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
             server.sendmail(SENDER_EMAIL, to_email, message.as_string())
-    except Exception as e:
-        print(f"Error sending email to {to_email}: {e}")
+
+    except smtplib.SMTPRecipientsRefused:
+        print(f"Recipient refused: {to_email}")
+    except smtplib.SMTPSenderRefused:
+        print(f"Sender refused: {SENDER_EMAIL}")
+    except smtplib.SMTPDataError as e:
+        print(f"SMTP data error: {e}")
+    except smtplib.SMTPConnectError as e:
+        print(f"SMTP connection error: {e}")
+    except smtplib.SMTPServerDisconnected as e:
+        print(f"SMTP server disconnected: {e}")
+    except smtplib.SMTPException as e:
+        print(f"General SMTP error: {e}")
