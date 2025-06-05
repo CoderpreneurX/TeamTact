@@ -3,6 +3,7 @@ export const API_ROUTES = {
     LOGIN: "auth/login",
     REGISTER: "auth/signup",
     REFRESH_TOKEN: "auth/refresh",
+    REQUEST_RESET_PASSWORD: "auth/request-reset-password",
   },
   TEAMS: {
     TEAMS: "teams/",

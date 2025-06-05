@@ -7,6 +7,8 @@ import { MainLayout } from "@/app/layout";
 import { TeamsPage } from "@/pages/teams";
 import { TeamViewPage } from "@/pages/teams/TeamViewPage";
 import { AcceptInvitePage } from "@/pages/teams/AcceptInvitePage";
+import { RequestResetPasswordPage } from "@/pages/auth/RequestResetPasswordPage";
+import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 
 const SidebarLayout = () => (
   <MainLayout>
@@ -20,6 +22,11 @@ export const AppRouter = () => {
       {/* No sidebar routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route
+        path="/request-reset-password"
+        element={<RequestResetPasswordPage />}
+      />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Sidebar layout routes */}
       <Route element={<SidebarLayout />}>
