@@ -15,9 +15,12 @@ import type React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarMenuItems } from "./SidebarLayout";
 import { Link } from "react-router-dom";
+import { NavUser } from "./nav-user";
+import useUserStore from "@/store/UserStore";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
+  const user = useUserStore((state) => state.user)
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="mx-auto">
@@ -35,7 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   <Link to={item.url}>
                     <item.icon />
-                    <span>{item.title}</span>
+                    <span className="font-semibold">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -45,7 +48,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup />
         <SidebarGroup />
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <NavUser user={user} />
+      </SidebarFooter>
     </Sidebar>
   );
 }
