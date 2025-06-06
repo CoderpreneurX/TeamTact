@@ -5,6 +5,7 @@ import { API_ROUTES } from "@/utils/constants";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import LogoTransparent from "@/assets/ProjectLogo/png/TeamTact Logo - Transparent Background.png";
+import useUserStore from "@/store/UserStore";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export const LoginPage: React.FC = () => {
 
       if (response.data?.success === true) {
         toast.success(response.data?.message);
+        useUserStore.getState().setUser(response.data?.data)
         navigate("/dashboard");
       } else {
         toast.error(response.data?.message);
