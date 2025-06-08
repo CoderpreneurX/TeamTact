@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     SMTP_USER: str
     SMTP_PASS: str
     FRONTEND_DOMAIN: str
+    AUTH_TOKEN_EXPIRY_MINUTES: int
 
     class Config:
         env_file = ".env"
