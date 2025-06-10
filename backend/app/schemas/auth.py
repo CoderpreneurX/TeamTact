@@ -16,3 +16,9 @@ class ResetResponse(BaseModel):
 
 class ValidateResetPasswordToken(BaseModel):
     code: Optional[str] = None
+
+class VerifyEmail(BaseModel):
+    token: str
+
+class ResendVerificationEmail(BaseModel):
+    email: EmailStr

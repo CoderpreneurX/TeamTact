@@ -63,8 +63,20 @@ def create_token(
     return token
 
 
+def activate_user(user_id, session: Session):
+    user = get_user_by_id(session, user_id)
+    user.email_verified = True
+    session.commit()
+    session.refresh(user)
+
+
 def get_token_by_code(session: Session, code: str, purpose: TokenPurpose) -> Token:
     statement = select(Token).where(Token.code == code, Token.purpose == purpose)
+    return session.exec(statement).first()
+
+
+def get_token_by_user_id(user_id: str | UUID, session: Session, purpose: TokenPurpose):
+    statement = select(Token).where(Token.user_id == user_id, Token.purpose == purpose)
     return session.exec(statement).first()
 
 

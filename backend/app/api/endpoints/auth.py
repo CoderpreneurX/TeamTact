@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from fastapi import BackgroundTasks, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
@@ -14,25 +16,37 @@ from app.core.token import (
     verify_refresh_token,
 )
 from app.crud.auth import (
+    create_token,
     create_user,
     get_user_by_email_or_username,
     get_user_by_id,
 )
 from app.db.session import get_session
+from app.models.auth import TokenPurpose
 from app.models.user import User
-from app.schemas.auth import RequestPasswordReset
+from app.schemas.auth import (
+    PerformPasswordReset,
+    RequestPasswordReset,
+    ValidateResetPasswordToken,
+    VerifyEmail,
+    ResendVerificationEmail,
+)
 from app.schemas.user import UserCreate
 from app.services.auth import (
     generate_reset_token,
     reset_password,
     send_reset_password_email,
+    send_verification_email,
     validate_reset_password_token,
+    verify_email_verification_token,
+    resend_verification_email,
 )
-from app.schemas.auth import PerformPasswordReset, ValidateResetPasswordToken
 
 
 def signup_user(
-    user_in: UserCreate, session: Session = Depends(get_session)
+    user_in: UserCreate,
+    background_tasks: BackgroundTasks,
+    session: Session = Depends(get_session),
 ) -> JSONResponse:
     existing_user = get_user_by_email_or_username(
         session, user_in.email, user_in.username
@@ -42,7 +56,9 @@ def signup_user(
             content={"success": False, "message": "Email or Username already taken!"}
         )
 
-    create_user(session, user_in)
+    user = create_user(session, user_in)
+    token = create_token(session, user.id, uuid4().hex, TokenPurpose.EMAIL_VERIFICATION)
+    background_tasks.add_task(send_verification_email, user.email, token.code)
 
     return JSONResponse(
         {
@@ -185,7 +201,9 @@ def validate_reset_password_token_endpoint(
     return response
 
 
-def confirm_password_reset(request: Request, data: PerformPasswordReset, session: Session):
+def confirm_password_reset(
+    request: Request, data: PerformPasswordReset, session: Session
+):
     token = data.token if data.token else request.cookies.get("reset_password_token")
     success = reset_password(session, token, data.new_password)
     if not success:
@@ -193,4 +211,40 @@ def confirm_password_reset(request: Request, data: PerformPasswordReset, session
 
     return JSONResponse(
         content={"message": "Password reset successful"}, status_code=200
+    )
+
+
+def verify_email_endpoint(data: VerifyEmail, session: Session):
+    token = data.token
+
+    success = verify_email_verification_token(token, session)
+
+    if not success:
+        return JSONResponse(
+            content={
+                "success": False,
+                "message": "The link is either Invalid or has Expired!",
+            },
+            status_code=400,
+        )
+
+    return JSONResponse(
+        content={
+            "success": True,
+            "message": "Email verified successfully, you may now login!",
+        }
+    )
+
+
+def resend_verification_email_endpoint(data: ResendVerificationEmail, background_tasks: BackgroundTasks, session: Session):
+    email = data.email
+    result = resend_verification_email(email, session)
+
+    if isinstance(result, dict):
+        return JSONResponse(content=result, status_code=400)
+
+    background_tasks.add_task(send_verification_email, email, result.code)
+
+    return JSONResponse(
+        content={"success": True, "message": "Verification email sent successfully!"}
     )
