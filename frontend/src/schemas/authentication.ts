@@ -21,6 +21,10 @@ export const resetPasswordFormSchema = z.object({
   email: z.string().email("Enter a valid email"),
 });
 
+export const requestEmailVerificationSchema = z.object({
+  email: z.string().email("Enter a valid email"),
+});
+
 export const resetPasswordSchema = z
   .object({
     password: z.string().min(8, "Password must be at least 8 characters long"),
@@ -35,3 +39,4 @@ export type LoginFormSchema = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerFormSchema>;
 export type PasswordResetFormData = z.infer<typeof resetPasswordFormSchema>;
 export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+export type RequestEmailVerificationFormData = z.infer<typeof requestEmailVerificationSchema>;

@@ -6,6 +6,8 @@ export const API_ROUTES = {
     REQUEST_RESET_PASSWORD: "auth/request-reset-password",
     VALIDATE_RESET_PASSWORD_TOKEN: "auth/validate-reset-password-token",
     CONFIRM_RESET_PASSWORD: "auth/confirm-reset-password",
+    VERIFY_EMAIL: "auth/verify-email",
+    REQUEST_EMAIL_VERIFICATION: "auth/resend-verification-email",
   },
   TEAMS: {
     TEAMS: "teams/",
@@ -20,5 +22,6 @@ export const APP_ROUTES = {
   DASHBOARD: "/dashboard",
   TEAMS: "/teams",
   REQUEST_RESET_PASSWORD: "/request-reset-password",
-  LOGIN: "/login"
+  REQUEST_EMAIL_VERIFICATION: "/request-email-verification",
+  LOGIN: "/login",
 };
