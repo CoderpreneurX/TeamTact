@@ -39,8 +39,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     <SidebarProvider>
       <div className="flex w-full h-screen">
         <AppSidebar />
-        <main className="flex-1 overflow-y-auto">
-          <div className="mb-4 flex flex-col gap-y-2">
+        <main className="flex-1 flex flex-col overflow-y-auto">
+          <div className="mb-4 flex flex-col gap-y-2 sticky top-0 bg-white border-b">
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
               <div className="flex items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1" />
@@ -55,8 +55,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                         {/* Dynamic breadcrumbs for each segment */}
                         {segments.map((segment, index) => (
                           <div key={segment} className="flex items-center">
-                            {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
-                            <BreadcrumbItem className="hidden md:block">
+                            {index > 0 && <BreadcrumbSeparator className="" />}
+                            <BreadcrumbItem className="">
                               {index === segments.length - 1 ? (
                                 // Last segment as current page (not clickable)
                                 <BreadcrumbPage className="font-medium">
@@ -93,7 +93,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </header>
           </div>
 
-          <div className="px-4 pb-4">
+          <div className="flex-1 px-4 pb-4">
             {children}
           </div>
         </main>
