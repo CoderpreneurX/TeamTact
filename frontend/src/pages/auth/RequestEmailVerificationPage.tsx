@@ -1,5 +1,5 @@
 import api from "@/utils/api";
-import { API_ROUTES } from "@/utils/constants";
+import { API_ROUTES, INTERNAL_SERVER_ERROR_MESSAGE } from "@/utils/constants";
 import { toast } from "sonner";
 import type { PasswordResetFormData } from "@/schemas/authentication";
 import { Header } from "@/components/Header";
@@ -19,7 +19,7 @@ export function RequestEmailVerificationPage() {
         toast.error(response.data?.message);
       }
     } catch {
-      toast.error("Some Internal Error occured, please try later!");
+      toast.error(INTERNAL_SERVER_ERROR_MESSAGE);
     }
   };
   return (

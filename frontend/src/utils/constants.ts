@@ -8,6 +8,7 @@ export const API_ROUTES = {
     CONFIRM_RESET_PASSWORD: "auth/confirm-reset-password",
     VERIFY_EMAIL: "auth/verify-email",
     REQUEST_EMAIL_VERIFICATION: "auth/resend-verification-email",
+    LOGOUT: "auth/logout",
   },
   TEAMS: {
     TEAMS: "teams/",
@@ -25,3 +26,5 @@ export const APP_ROUTES = {
   REQUEST_EMAIL_VERIFICATION: "/request-email-verification",
   LOGIN: "/login",
 };
+
+export const INTERNAL_SERVER_ERROR_MESSAGE = "Some Internal Server Error occurred, please try later!"

@@ -1,7 +1,7 @@
 import api from "@/utils/api";
 import { LoginForm } from "./components/login-form";
 import type { AuthCredentials } from "@/types/authentication";
-import { API_ROUTES } from "@/utils/constants";
+import { API_ROUTES, INTERNAL_SERVER_ERROR_MESSAGE } from "@/utils/constants";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "@/store/UserStore";
@@ -22,7 +22,7 @@ export const LoginPage: React.FC = () => {
         toast.error(response.data?.message);
       }
     } catch {
-      toast.error("Some Internal Server Error occured, Please try later!");
+      toast.error(INTERNAL_SERVER_ERROR_MESSAGE);
     }
   };
 

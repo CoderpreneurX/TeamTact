@@ -1,7 +1,7 @@
 import type { AuthCredentials } from "@/types/authentication";
 import { RegisterForm } from "./components/register-form";
 import api from "@/utils/api";
-import { API_ROUTES } from "@/utils/constants";
+import { API_ROUTES, INTERNAL_SERVER_ERROR_MESSAGE } from "@/utils/constants";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -19,7 +19,7 @@ export const RegisterPage: React.FC = () => {
         toast.error(response.data?.message);
       }
     } catch {
-      toast.error("Some Internal Server Error occured, Please try later!");
+      toast.error(INTERNAL_SERVER_ERROR_MESSAGE);
     }
   };
 

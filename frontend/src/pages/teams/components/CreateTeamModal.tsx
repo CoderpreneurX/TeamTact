@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createTeamSchema, type CreateTeamFormValues } from "@/schemas/teams";
 import api from "@/utils/api";
-import { API_ROUTES } from "@/utils/constants";
+import { API_ROUTES, INTERNAL_SERVER_ERROR_MESSAGE } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
@@ -35,15 +35,13 @@ export function CreateTeamModal({ trigger }: CreateTeamDialogProps) {
       const response = await api.post(API_ROUTES.TEAMS.TEAMS, values);
 
       if (response.data?.success === true) {
-        reset()
+        reset();
         toast.success(response.data?.message);
       } else {
         toast.error(response.data?.message);
       }
     } catch {
-      toast.error(
-        "Some Internal Server Error occured, please try again later!"
-      );
+      toast.error(INTERNAL_SERVER_ERROR_MESSAGE);
     }
   };
 
