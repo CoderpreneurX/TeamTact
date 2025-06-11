@@ -2,6 +2,7 @@ import secrets
 from uuid import uuid4
 from datetime import timedelta, datetime
 from app.core.email import render_template, send_email
+from app.core.exceptions import JSONException
 from app.crud.auth import (
     get_token_by_user_id,
     get_user_by_email_or_username,
@@ -9,7 +10,7 @@ from app.crud.auth import (
     get_token_by_code,
     delete_token,
     get_user_by_id,
-    activate_user
+    activate_user,
 )
 from app.models.auth import TokenPurpose
 from app.core.config import settings
@@ -41,7 +42,7 @@ def send_reset_password_email(to_email: str, token_code: str):
 def generate_reset_token(session, email: str) -> str:
     user = get_user_by_email_or_username(session, email=email)
     if not user:
-        return None
+        raise JSONException(message="No user has been registered with that email!", status_code=404)
     code = secrets.token_urlsafe(32)
     create_token(
         session, user_id=user.id, code=code, purpose=TokenPurpose.RESET_PASSWORD
@@ -89,7 +90,6 @@ def validate_reset_password_token(code, session):
     if not user:
         return False
 
-    delete_token(session, token)
     return True
 
 
@@ -101,7 +101,7 @@ def verify_email_verification_token(token: str, session):
     if not verification_token:
         return False
 
-    #Expiry Check
+    # Expiry Check
     if datetime.utcnow() - verification_token.created_at > timedelta(
         hours=EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS
     ):
@@ -114,24 +114,26 @@ def verify_email_verification_token(token: str, session):
     delete_token(session, verification_token)
     return True
 
+
 def resend_verification_email(email: str, session):
     user = get_user_by_email_or_username(session, email)
 
     if not user:
-        return {
-            "success": False,
-            "message": "No user found with the provided email!"
-        }
-    
+        raise JSONException(
+            message="No user found with the provided email!", status_code=404
+        )
+
     if user.email_verified:
-        return {
-            "success": False,
-            "message": "This email is already verified, please login instead!"
-        }
+        raise JSONException(
+            message="This email is already verified, please login instead!",
+            status_code=400,
+        )
 
     token = get_token_by_user_id(user.id, session, TokenPurpose.EMAIL_VERIFICATION)
 
     if not token:
-        token = create_token(session, user.id, uuid4().hex, TokenPurpose.EMAIL_VERIFICATION)
+        token = create_token(
+            session, user.id, uuid4().hex, TokenPurpose.EMAIL_VERIFICATION
+        )
 
     return token

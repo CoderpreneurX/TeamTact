@@ -1,21 +1,16 @@
 from typing import Optional
+from uuid import UUID
 from fastapi import Request
-from fastapi.responses import JSONResponse
 
+from app.core.exceptions import JSONException
 from app.core.token import verify_access_token
 
 
-def get_user(request: Request) -> str | JSONResponse:
+def get_user(request: Request) -> UUID:
     token: Optional[str] = request.cookies.get("access_token")
 
     if not token:
-        return JSONResponse(
-            content={
-                "success": False,
-                "message": "Access Token not found in the Cookies!",
-            },
-            status_code=401,
-        )
+        raise JSONException(message="Not authenticated!", status_code=401)
 
     user_id = verify_access_token(token)
 

@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
-from fastapi.responses import JSONResponse
 from jose import ExpiredSignatureError, JWTError, jwt
 
 from app.core.config import settings
+from app.core.exceptions import JSONException
 
 # Secret keys
 ACCESS_TOKEN_SECRET = settings.JWT_SECRET_KEY
@@ -29,37 +29,33 @@ def generate_refresh_token(user_id: UUID) -> str:
     payload = {
         "sub": str(user_id),
         "type": "refresh",
-        "exp": datetime.now(timezone.utc)
-        + timedelta(days=REFRESH_TOKEN_EXP_DAYS),
+        "exp": datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXP_DAYS),
         "iat": datetime.now(timezone.utc),
     }
     return jwt.encode(payload, REFRESH_TOKEN_SECRET, algorithm="HS256")
 
 
-def verify_access_token(token: str) -> UUID | JSONResponse:
+def verify_access_token(token: str) -> UUID:
     try:
         payload = jwt.decode(
             token, ACCESS_TOKEN_SECRET, algorithms=settings.JWT_ALGORITHM
         )
         if payload.get("type") != "access":
-            return JSONResponse(
-                content={
-                    "success": False,
-                    "message": "Invalid token type: expected access token",
-                },
+            raise JSONException(
+                message="Invalid token type: expected access token",
                 status_code=401,
             )
         return UUID(payload.get("sub"))
-    except ExpiredSignatureError:
-        return JSONResponse(
-            content={"success": False, "message": "Access token has expired"},
+    except ExpiredSignatureError as exc:
+        raise JSONException(
+            message="Access token has expired",
             status_code=401,
-        )
-    except JWTError:
-        return JSONResponse(
-            content={"success": False, "message": "Invalid access token"},
+        ) from exc
+    except JWTError as exc:
+        raise JSONException(
+            message="Invalid access token",
             status_code=401,
-        )
+        ) from exc
 
 
 def verify_refresh_token(token: str):
@@ -68,21 +64,18 @@ def verify_refresh_token(token: str):
             token, REFRESH_TOKEN_SECRET, algorithms=settings.JWT_ALGORITHM
         )
         if payload.get("type") != "refresh":
-            return JSONResponse(
-                content={
-                    "success": False,
-                    "message": "Invalid token type: expected refresh token",
-                },
+            raise JSONException(
+                message="Invalid token type: expected refresh token",
                 status_code=400,
             )
         return payload
-    except ExpiredSignatureError:
-        return JSONResponse(
-            content={"success": False, "message": "Refresh token has expired"},
+    except ExpiredSignatureError as exc:
+        raise JSONException(
+            message="Refresh token has expired",
             status_code=400,
-        )
-    except JWTError:
-        return JSONResponse(
-            content={"success": False, "message": "Invalid refresh token"},
+        ) from exc
+    except JWTError as exc:
+        raise JSONException(
+            message="Invalid refresh token",
             status_code=400,
-        )
+        ) from exc
