@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
-import api from '@/utils/api';
+import React, { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import api from "@/utils/api";
+import useUserStore from "@/store/UserStore";
+import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -13,9 +15,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await api.get('/auth/me');
-        if (res.data?.success === true) {
+        const response = await api.get("/auth/me");
+        if (response.data?.success === true) {
           setIsAuthorized(true);
+          useUserStore.getState().setUser(response.data?.data);
         } else {
           setIsAuthorized(false);
         }
@@ -28,7 +31,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, []);
 
   if (isAuthorized === null) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid h-full place-content-center">
+        <div className="flex items-center gap-x-2">
+          <Loader2 className="animate-spin" />
+          <p className="text-xl font-bold">Loading</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthorized) {
