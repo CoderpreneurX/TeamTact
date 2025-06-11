@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
 from app.api.dependencies import get_user
+from app.core.exceptions import JSONException
 from app.core.security import (
     delete_auth_cookies,
     set_auth_cookies,
@@ -95,7 +96,7 @@ def login_user(
 
     # Create a JSON response
     response = JSONResponse(
-        content={"success": True, "data": user.to_json()}, status_code=200
+        content={"success": True, "message": "Logged in Successfully!", "data": user.to_json()}, status_code=200
     )
 
     # Set cookies on THIS response
@@ -113,9 +114,6 @@ def refresh_access_token(request: Request):
         )
 
     verification_result = verify_refresh_token(refresh_token)
-
-    if isinstance(verification_result, JSONResponse):
-        return verification_result  # error response
 
     user_id = verification_result.get("sub")
     if not user_id:
@@ -144,9 +142,6 @@ def refresh_access_token(request: Request):
 
 
 def get_profile(session: Session = Depends(get_session), user_id=Depends(get_user)):
-    if isinstance(user_id, JSONResponse):
-        return user_id
-
     user: User = get_user_by_id(session=session, user_id=user_id)
 
     return JSONResponse(
@@ -163,8 +158,6 @@ def request_reset_password(
     data: RequestPasswordReset, background_tasks: BackgroundTasks, session: Session
 ):
     code = generate_reset_token(session, data.email)
-    if not code:
-        raise HTTPException(status_code=404, detail="User not found")
 
     background_tasks.add_task(send_reset_password_email, data.email, code)
 
@@ -208,7 +201,7 @@ def confirm_password_reset(
     token = data.token if data.token else request.cookies.get("reset_password_token")
     success = reset_password(session, token, data.new_password)
     if not success:
-        raise HTTPException(status_code=400, detail="Invalid or expired token")
+        raise JSONException(message="Invalid or expired token")
 
     return JSONResponse(
         content={"message": "Password reset successful"}, status_code=200
@@ -240,9 +233,6 @@ def verify_email_endpoint(data: VerifyEmail, session: Session):
 def resend_verification_email_endpoint(data: ResendVerificationEmail, background_tasks: BackgroundTasks, session: Session):
     email = data.email
     result = resend_verification_email(email, session)
-
-    if isinstance(result, dict):
-        return JSONResponse(content=result, status_code=400)
 
     background_tasks.add_task(send_verification_email, email, result.code)
 
