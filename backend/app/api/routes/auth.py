@@ -10,6 +10,7 @@ from app.api.endpoints.auth import (
     validate_reset_password_token_endpoint,
     verify_email_endpoint,
     resend_verification_email_endpoint,
+    logout_endpoint,
 )
 from app.schemas.auth import (
     PerformPasswordReset,
@@ -87,6 +88,13 @@ def verify_email_route(data: VerifyEmail, session: Session = Depends(get_session
 
 @router.post("/resend-verification-email")
 def resend_verification_email_route(
-    data: ResendVerificationEmail, background_tasks: BackgroundTasks, session: Session = Depends(get_session)
+    data: ResendVerificationEmail,
+    background_tasks: BackgroundTasks,
+    session: Session = Depends(get_session),
 ):
     return resend_verification_email_endpoint(data, background_tasks, session)
+
+
+@router.get("/logout")
+def logout_route():
+    return logout_endpoint()

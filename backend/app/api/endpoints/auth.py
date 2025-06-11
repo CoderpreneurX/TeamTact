@@ -6,6 +6,7 @@ from sqlmodel import Session
 
 from app.api.dependencies import get_user
 from app.core.security import (
+    delete_auth_cookies,
     set_auth_cookies,
     set_reset_password_token_cookie,
     verify_password,
@@ -248,3 +249,13 @@ def resend_verification_email_endpoint(data: ResendVerificationEmail, background
     return JSONResponse(
         content={"success": True, "message": "Verification email sent successfully!"}
     )
+
+def logout_endpoint():
+    response = JSONResponse(content={
+        "success": True,
+        "message": "Logged out Successfully!"
+    })
+
+    delete_auth_cookies(response)
+
+    return response

@@ -31,6 +31,24 @@ def set_auth_cookies(response: Response, access_token: str, refresh_token: str):
         secure=False,
     )
 
+def delete_auth_cookies(response: Response):
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        max_age=0,
+        samesite="lax",
+        secure=False,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value="",
+        httponly=True,
+        max_age=0,
+        samesite="lax",
+        secure=False,
+    )
+
 
 def set_reset_password_token_cookie(response: JSONResponse, code: str):
     response.set_cookie(
