@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import api from "@/utils/api";
-import { API_ROUTES } from "@/utils/constants";
+import { API_ROUTES, INTERNAL_SERVER_ERROR_MESSAGE } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus, Plus, X } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -55,7 +55,7 @@ export function InviteUserModal({ teamId }: InviteUserModalProps) {
         toast.error(response.data?.message);
       }
     } catch {
-      toast.error("Some Internal Server Error occurred, please try later!");
+      toast.error(INTERNAL_SERVER_ERROR_MESSAGE);
     }
   };
 

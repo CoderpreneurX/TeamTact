@@ -1,11 +1,6 @@
-from datetime import datetime, timedelta, timezone
-from typing import Tuple
-
 from fastapi import Response
-from jose import jwt
+from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
-
-from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -23,7 +18,7 @@ def set_auth_cookies(response: Response, access_token: str, refresh_token: str):
         key="access_token",
         value=access_token,
         httponly=True,
-        max_age=30 * 60,  # 15 minutes
+        max_age=30 * 60,  # 30 minutes
         samesite="lax",
         secure=False,
     )
@@ -32,6 +27,35 @@ def set_auth_cookies(response: Response, access_token: str, refresh_token: str):
         value=refresh_token,
         httponly=True,
         max_age=7 * 24 * 60 * 60,  # 7 days
+        samesite="lax",
+        secure=False,
+    )
+
+def delete_auth_cookies(response: Response):
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        max_age=0,
+        samesite="lax",
+        secure=False,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value="",
+        httponly=True,
+        max_age=0,
+        samesite="lax",
+        secure=False,
+    )
+
+
+def set_reset_password_token_cookie(response: JSONResponse, code: str):
+    response.set_cookie(
+        key="reset_password_token",
+        value=code,
+        httponly=True,
+        max_age=60 * 60,  # 60 minutes
         samesite="lax",
         secure=False,
     )

@@ -7,8 +7,11 @@ from typing import Optional
 from sqlmodel import Session, or_, select
 
 from app.core.security import hash_password
+from app.models.auth import Token, TokenPurpose
 from app.models.user import User
 from app.schemas.user import UserCreate
+
+from uuid import UUID
 
 
 def get_user_by_email_or_username(
@@ -48,3 +51,35 @@ def create_user(session: Session, user_in: UserCreate) -> User:
     session.commit()
     session.refresh(user)
     return user
+
+
+def create_token(
+    session: Session, user_id: UUID, code: str, purpose: TokenPurpose
+) -> Token:
+    token = Token(user_id=user_id, code=code, purpose=purpose)
+    session.add(token)
+    session.commit()
+    session.refresh(token)
+    return token
+
+
+def activate_user(user_id, session: Session):
+    user = get_user_by_id(session, user_id)
+    user.email_verified = True
+    session.commit()
+    session.refresh(user)
+
+
+def get_token_by_code(session: Session, code: str, purpose: TokenPurpose) -> Token:
+    statement = select(Token).where(Token.code == code, Token.purpose == purpose)
+    return session.exec(statement).first()
+
+
+def get_token_by_user_id(user_id: str | UUID, session: Session, purpose: TokenPurpose):
+    statement = select(Token).where(Token.user_id == user_id, Token.purpose == purpose)
+    return session.exec(statement).first()
+
+
+def delete_token(session: Session, token: Token):
+    session.delete(token)
+    session.commit()

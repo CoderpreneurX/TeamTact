@@ -1,10 +1,11 @@
 import api from "@/utils/api";
 import { LoginForm } from "./components/login-form";
 import type { AuthCredentials } from "@/types/authentication";
-import { API_ROUTES } from "@/utils/constants";
+import { API_ROUTES, INTERNAL_SERVER_ERROR_MESSAGE } from "@/utils/constants";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import LogoTransparent from "@/assets/ProjectLogo/png/TeamTact Logo - Transparent Background.png";
+import useUserStore from "@/store/UserStore";
+import { Header } from "@/components/Header";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,20 +16,19 @@ export const LoginPage: React.FC = () => {
 
       if (response.data?.success === true) {
         toast.success(response.data?.message);
+        useUserStore.getState().setUser(response.data?.data);
         navigate("/dashboard");
       } else {
         toast.error(response.data?.message);
       }
     } catch {
-      toast.error("Some Internal Server Error occured, Please try later!");
+      toast.error(INTERNAL_SERVER_ERROR_MESSAGE);
     }
   };
 
   return (
     <div className="space-y-2 flex flex-col h-screen">
-      <header className="h-15 p-1.5 sticky top-0 bg-white z-10 border-b">
-        <img src={LogoTransparent} alt="TeamTact Logo" className="h-12 w-auto" />
-      </header>
+      <Header />
       <div className="grid flex-1 place-items-center p-4">
         <LoginForm onSubmit={handleSubmit} />
       </div>
