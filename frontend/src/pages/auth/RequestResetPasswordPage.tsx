@@ -8,7 +8,7 @@ import { Header } from "@/components/Header";
 export function RequestResetPasswordPage() {
   const handleSubmit = async (email: PasswordResetFormData) => {
     try {
-      const response = await api.post(API_ROUTES.AUTH.REQUEST_EMAIL_VERIFICATION, email)
+      const response = await api.post(API_ROUTES.AUTH.REQUEST_RESET_PASSWORD, email)
 
       if (response.data?.success === true) {
         toast.success(response.data?.message)
