@@ -1,35 +1,59 @@
 import random
 import string
+from typing import Sequence
+from uuid import UUID
 
-
-from fastapi import BackgroundTasks
 from sqlmodel import Session
 
-from app.crud.team import is_code_unique
-from app.core.email import render_template, send_email
+from app.core.exceptions import JSONException
+from app.crud.team import (
+    create_team,
+    delete_team,
+    read_joined_teams,
+    read_team_by_id,
+    read_teams_by_owner,
+)
+from app.models.team import Team
+from app.schemas.team import TeamCreateRequest
 
 
-def generate_unique_team_code(session: Session):
-    charset = string.ascii_uppercase + string.digits  # A-Z + 0-9
-    max_attempts = 10000  # Prevent infinite loop in edge cases
-
-    for _ in range(max_attempts):
-        code = "".join(random.choices(charset, k=6))
-        if is_code_unique(session, code):
-            return code
-
-    return None
+def _generate_team_code(length: int = 6) -> str:
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
-def send_team_invite_email(to_email: str, invite_link: str, team_name: str):
-    subject = f"You’re invited to join {team_name}"
-    html_body = render_template(
-        "invite.html", invite_link=invite_link, team_name=team_name
+def add_team(session: Session, owner_id: UUID, payload: TeamCreateRequest) -> Team:
+    existing = read_teams_by_owner(
+        session=session, owner_id=owner_id, search=payload.name
     )
-    send_email(subject, to_email, html_body)
+    if existing:
+        raise JSONException(
+            status_code=400, message="A team with this name already exists"
+        )
+    return create_team(
+        session=session,
+        owner_id=owner_id,
+        name=payload.name,
+        code=_generate_team_code(),
+    )
 
 
-def queue_team_invite_email(
-    background_tasks: BackgroundTasks, to_email: str, invite_link: str, team_name: str
-):
-    background_tasks.add_task(send_team_invite_email, to_email, invite_link, team_name)
+def get_team(session: Session, team_id: UUID) -> Team:
+    team = read_team_by_id(session=session, team_id=team_id)
+    if not team:
+        raise JSONException(status_code=404, message="Team not found")
+    return team
+
+
+def get_teams(
+    session: Session, owner_id: UUID, team_type: str, search: str | None = None
+) -> Sequence[Team]:
+    if team_type == "created":
+        return read_teams_by_owner(session=session, owner_id=owner_id, search=search)
+    return read_joined_teams(session=session, user_id=owner_id, search=search)
+
+
+def drop_team(session: Session, team_id: UUID, owner_id: UUID) -> None:
+    team = read_team_by_id(session=session, team_id=team_id)
+    if not team or team.owner_id != owner_id:
+        raise JSONException(status_code=403, message="You cannot delete this team")
+    delete_team(session=session, team=team)
