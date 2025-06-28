@@ -15,12 +15,12 @@ class JSONException(Exception):
         status_code (int): HTTP status code to return with the response.
     """
 
-    def __init__(self, message: str, status_code: int = 400):
+    def __init__(self, message: str | dict[str, str], status_code: int = 400):
         self.message = message
         self.status_code = status_code
 
 
-async def json_exception_handler(request: Request, exc: JSONException):
+async def json_exception_handler(_: Request, exc: JSONException):
     """
     Asynchronous exception handler for JSONException.
 
