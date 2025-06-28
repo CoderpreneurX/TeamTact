@@ -30,6 +30,7 @@ class User(UserBase, table=True):
     )
 
     teammate: Optional["TeamMate"] = Relationship(back_populates="user")
+    invitations: Optional["Invitation"] = Relationship(back_populates="invitor")
 
     def is_verified(self) -> bool:
         return self.email_verified

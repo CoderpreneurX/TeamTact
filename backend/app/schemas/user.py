@@ -1,6 +1,5 @@
 from sqlmodel import SQLModel
 from uuid import UUID
-from datetime import datetime
 
 
 class UserCreate(SQLModel):
@@ -20,7 +19,3 @@ class UserRead(SQLModel):
     fullname: str
     email: str
     username: str
-    is_active: bool
-    email_verified: bool
-    created_at: datetime
-    updated_at: datetime
